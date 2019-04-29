@@ -1,0 +1,7 @@
+config FINGERPRINT_GFX1XM
+        bool "FINGERPRINT_GFX1XM"
+        depends on CUSTOM_KERNEL_FINGERPRINT
+        default y
+        help
+          gfx1xm driver
+

@@ -1,0 +1,124 @@
+
+/ {
+	flashlight:strobe_main {
+        	compatible = "mediatek,strobe_main";
+    };
+    
+    finger:finger {
+		compatible = "mediatek,teksun-finger";
+	};
+    switchcharg:switchcharg {
+		compatible = "mediatek,teksun-switchcharg";
+	};
+	
+	subflashlight: flashlights_subflashlight@0 {
+		compatible = "mediatek,flashlights_subflashlight_gpio";
+	};	
+	
+	lcm_mode: lcm_mode {
+			compatible = "mediatek,lcm_mode";
+	};
+	
+	cust_accel@9 {
+		compatible				= "mediatek,teksun_acc";
+		i2c_num					= <4>;
+		i2c_addr				= <0x18 0 0 0>;
+		direction				= <3>;
+		power_id				= <0xffff>;
+		power_vol				= <0>;
+		firlen					= <0>;
+		is_batch_supported			= <0>;
+	};
+	
+	cust_alsps@9 {
+		compatible				= "mediatek,teksun_alsps";
+		i2c_num					= <3>;
+		i2c_addr				= <0x48 0 0 0>;
+		polling_mode_ps			= <0>;
+		polling_mode_als		= <1>;
+		power_id				= <0xffff>;
+		power_vol				= <0>;
+		als_level	= <5 9 36 59 82 132 205 273 500 845 1136 1545 2364 4655 6982>;
+		als_value	= <10 20  35   45   70   115  180 240 350 530  850 1700 2600 5120 7680 10240>;
+		ps_threshold_high		=  <150>;
+		ps_threshold_low		=  <100>;
+		state_val = <0x0>;
+		psctrl_val = <0x31>;
+		alsctrl_val = <0x39>;
+		ledctrl_val = <0xFF>;
+		wait_val = <0x7>;
+		is_batch_supported_ps	= <0>;
+		is_batch_supported_als	= <0>;
+	};
+///Xunhu: using yuv imgsensor for auxiliary camera by trf011{{&&
+///Description: 使用yuv摄像头作为辅摄(XUNHU_LPS_AUXILIARYCAMERA_SUPPORT)	
+	cust_auxiliarycamera:cust_auxiliarycamera {
+		compatible = "mediatek,auxiliarycamera";
+		auxiliarycamera_parameter:auxiliarycamera_parameter {
+		compatible = "mediatek,auxiliarycamera_parameter";
+		cumulative_cyles = <2>; 				//cumulative cyles, needn't modify in general
+		diff_percent = <30>; 					//diff percent, needn't modify in general
+		cam3_1_bv_value = "gc0310,62,18";		//style: "imgsensor_name,max_bv,min_bv", imgsensor_name need same as cam3_sensor_list defined in CAM3_FUNCTION_STRUCT, if useless make it null
+		cam3_2_bv_value = "null";				//style: "imgsensor_name,max_bv,min_bv", imgsensor_name need same as cam3_sensor_list defined in CAM3_FUNCTION_STRUCT, if useless make it null
+		cam3_3_bv_value = "null";				//style: "imgsensor_name,max_bv,min_bv", imgsensor_name need same as cam3_sensor_list defined in CAM3_FUNCTION_STRUCT, if useless make it null
+		main1_bv_value = "s5k3l8mipiraw,81,-50";	//style: "imgsensor_name,max_bv,min_bv", imgsensor_name need same as SENSOR_DRVNAME_XXXX defined in kd_imgsensor.h, if useless make it null
+		main2_bv_value = "gc8034mipiraw,50,-50";				//style: "imgsensor_name,max_bv,min_bv", imgsensor_name need same as SENSOR_DRVNAME_XXXX defined in kd_imgsensor.h, if useless make it null
+		main3_bv_value = "null";				//style: "imgsensor_name,max_bv,min_bv", imgsensor_name need same as SENSOR_DRVNAME_XXXX defined in kd_imgsensor.h, if useless make it null
+		main4_bv_value = "null";				//style: "imgsensor_name,max_bv,min_bv", imgsensor_name need same as SENSOR_DRVNAME_XXXX defined in kd_imgsensor.h, if useless make it null
+		main5_bv_value = "null";				//style: "imgsensor_name,max_bv,min_bv", imgsensor_name need same as SENSOR_DRVNAME_XXXX defined in kd_imgsensor.h, if useless make it null
+	};
+	};
+///&&}}
+};
+&i2c3 {
+///Xunhu: using yuv imgsensor for auxiliary camera by trf011{{&&
+///Description: 使用yuv摄像头作为辅摄(XUNHU_LPS_AUXILIARYCAMERA_SUPPORT)
+	auxiliarycamera@4c {
+		compatible = "mediatek,auxiliarycamera";
+		reg = <0x4c>;
+	};
+///&&}}
+};
+&lcm_mode {
+	pinctrl-names =	"default","lcm_rst","lcm_rst_gpio_high","lcm_rst_gpio_low";
+	pinctrl-0 = <&lcm_rst_default>;
+	pinctrl-1 = <&lcm_rst>;
+	pinctrl-2 = <&lcm_rst_gpio_high>;
+	pinctrl-3 = <&lcm_rst_gpio_low>;
+};
+
+/*add by tangjian for lcm reset pin status*/
+&pio{
+	lcm_rst_default:lcmrstdefault {
+
+	};
+	lcm_rst:lcm_rst_gpio_mode1@gpio83 {
+	    pins_cmd_dat {
+			pins = <PINMUX_GPIO83__FUNC_LCM_RST>;
+		};
+	};
+	lcm_rst_gpio_high:lcm_rst_gpio_mode2@gpio83 {
+	    pins_cmd_dat {
+			pins = <PINMUX_GPIO83__FUNC_GPIO83>;
+			slew-rate = <1>;
+			output-high;
+		};
+	};
+	lcm_rst_gpio_low:lcm_rst_gpio_mode3@gpio83 {
+	    pins_cmd_dat {
+			pins = <PINMUX_GPIO83__FUNC_GPIO83>;
+			slew-rate = <1>;
+			output-low;
+		};
+	};
+};
+&spi0 {
+	#address-cells = <1>;
+	#size-cells = <0>;
+	finger@0 {  
+		 compatible = "mediatek,finger-spi";
+		 reg = <0>;
+		 spi-max-frequency = <60000000>;  
+		 status = "okay";  
+	};
+};
